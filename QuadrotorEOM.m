@@ -16,7 +16,19 @@ r = var(:, 12); % Body Yaw rate (rad/s)
 
 var = [X Y Z psi theta phi u_e v_e w_e p q r]';
 
+d = .06;
+km = .0024;
+m = 0.068; %mass in kg
+I_x = I(1) ;%5.8E-5;
+I_y = I(2) ;%7.2E-5;
+I_z = I(3) ;%1.0E-4;
 
+Total_I = [I_x I_y I_z]';
+
+Z_c = [-1, -1, -1, -1];
+L_c = [-d/sqrt(2), -d/sqrt(2), -d/sqrt(2), -d/sqrt(2)];
+M_c = [d/sqrt(2), d/sqrt(2), d/sqrt(2), d/sqrt(2)];
+N_c = [km, -km, km, -km];
 
 f1 = motor_forces(1);
 f2 = motor_forces(2);
@@ -25,7 +37,7 @@ f4 = motor_forces(4);
 
 omega = [p; q; r];
 
-g = [0,0, -9.8];
+g = -9.8;
 
 
 cpsi = cos(psi);  spsi = sin(psi);
@@ -46,17 +58,35 @@ xE_dot = pos_dot(1);
 yE_dot = pos_dot(2);
 zE_dot = pos_dot(3);
 
+% Euler Angle Rates
+phi_dot = (p + (sin(phi) * tan(theta) * q) + (cos(phi) * tan(theta) * r));
+theta_dot = ((cos(phi) * q) + (-sin(phi) * r));
+psi_dot = ((sin(phi) * sec(theta)) * q + (cos(phi)* sec(theta) * r));
+
+
+
+% Velocity Rates
+u_e_dot = ((r * v_e - q * w_e) + (g * -sin(theta)) + (X / m));
+v_e_dot = ((p * w_e - r * u_e) + (g * cos(theta) * sin(phi)) + (Y / m));
+w_e_dot = ((q * u_e - p * v_e) + (g * cos(theta) * cos(phi)) + (Z / m) + (Z_c / m));
+
+
+
+% Angular Velocity Rates
+p_dot = (((Iy - Iz) / Ix * q * r) + (L / Ix) + Lc / Ix);
+q_dot = (((Iz - Ix) / Iy * p * r) + (M / Iy) + Mc / Iy);
+r_dot = (((Ix - Iy) / Iz * p * q) + (N / Iz) + Nc / Iz); % check that all variables are aligned/defined
 
 F_total = f1 + f2 + f3 + f4;
 
 
-var_dot = [xE_dot yE_dot zE_dot psi_dot theta_dot phi_dot p_dot q_dot r_dot]';
-
-
-
+var_dot = [xE_dot yE_dot zE_dot psi_dot theta_dot phi_dot u_dot v_dot w_dot p_dot q_dot r_dot]';
 
 
 Thrust = [0; 0; F_total];
+
+
+
 
 
 

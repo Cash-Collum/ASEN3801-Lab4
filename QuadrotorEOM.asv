@@ -1,19 +1,34 @@
 function var_dot = QuadrotorEOM(t, var, g, m, I, d, km, nu, mu, motor_forces)
 
+
+X = var(:,1); % Inertial X Position (m)
+Y = var(:,2); % Inertial Y Position (m)
+Z = var(:, 3); % Inertial Z Position (m)
+psi = var(:,4); % Body Yaw angle (rad)
+theta = var(:,5); % Body Roll Angle (rad)
+phi = var(:,6); % Body Pitch Angle (rad)
+u_e = var(:, 7); % X velcocity in Body Coordinates (m/s)
+v_e = var(:, 8); % Y velocity in Body Coordinates (m/s)
+w_e = var(:, 9); % Z velocity in Body Coordinates (m/s)
+p = var(:,10); % Body Roll rate (rad/s)
+q = var(:, 11); % Body Pitch rate (rad/s)
+r = var(:, 12); % Body Yaw rate (rad/s)
+
 var = [X Y Z psi theta phi u_e v_e w_e p q r]';
 
-X = aircraft_state_array(:,1); % Inertial X Position (m)
-Y = aircraft_state_array(:,2); % Inertial Y Position (m)
-Z = aircraft_state_array(:,3); % Inertial Z Position (m)
-psi = aircraft_state_array(:,4); % Body Yaw angle (rad)
-theta = aircraft_state_array(:,5); % Body Roll Angle (rad)
-phi = aircraft_state_array(:,6); % Body Pitch Angle (rad)
-u_e = aircraft_state_array(:,7); % X velcocity in Body Coordinates (m/s)
-v_e = aircraft_state_array(:,8); % Y velocity in Body Coordinates (m/s)
-w_e = aircraft_state_array(:,9); % Z velocity in Body Coordinates (m/s)
-p = aircraft_state_array(:,10); % Body Roll rate (rad/s)
-q = aircraft_state_array(:,11); % Body Pitch rate (rad/s)
-r = aircraft_state_array(:,12); % Body Yaw rate (rad/s)
+d = .06;
+km = .0024;
+m = 0.068; %mass in kg
+I_x = 5.8E-5;
+I_y = 7.2E-5;
+I_z = 1.0E-4;
+
+Total_I = [I_x I_y I_z]';
+
+Z_c = [-1, -1, -1, -1];
+L_c = [-d/sqrt(2), -d/sqrt(2), -d/sqrt(2), -d/sqrt(2)];
+M_c = [d/sqrt(2), d/sqrt(2), d/sqrt(2), d/sqrt(2)];
+N_c = [km, -km, km, -km];
 
 f1 = motor_forces(1);
 f2 = motor_forces(2);
@@ -22,7 +37,7 @@ f4 = motor_forces(4);
 
 omega = [p; q; r];
 
-g = [0,0, -9.8];
+g = -9.8;
 
 
 cpsi = cos(psi);  spsi = sin(psi);
@@ -43,13 +58,35 @@ xE_dot = pos_dot(1);
 yE_dot = pos_dot(2);
 zE_dot = pos_dot(3);
 
+% Euler Angle Rates
+phi_dot = (p + (sin(phi) * tan(theta) * q) + (cos(phi) * tan(theta) * r));
+theta_dot = ((cos(phi) * q) + (-sin(phi) * r));
+psi_dot = ((sin(phi) * sec(theta)) * q + (cos(phi)* sec(theta) * r));
+
+
+
+% Velocity Rates
+u_e_dot = ((r * v_e - q * w_e) + (g * -sin(theta)) + (X / m));
+v_e_dot = ((p * w_e - r * u_e) + (g * cos(theta) * sin(phi)) + (Y / m));
+w_e_dot = ((q * u_e - p * v_e) + (g * cos(theta) * cos(phi)) + (Z / m) + (Z_c / m));
+
+
+
+% Angular Velocity Rates
+p_dot = (((Iy - Iz) / Ix * q * r) + (L / Ix) + Lc / Ix);
+q_dot = (((Iz - Ix) / Iy * p * r) + (M / Iy) + Mc / Iy);
+r_dot = (((Ix - Iy) / Iz * p * q) + (N / Iz) + Nc / Iz); % check that all variables are aligned/defined
 
 F_total = f1 + f2 + f3 + f4;
 
 
-var_dot = []
+var_dot = [xE_dot yE_dot zE_dot psi_dot theta_dot phi_dot u_dot v_dot w_dot p_dot q_dot r_dot]';
+
 
 Thrust = [0; 0; F_total];
+
+
+
 
 
 
