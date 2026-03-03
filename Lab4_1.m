@@ -1,5 +1,5 @@
 %% Initialzing Data
-load("/Users/parkerhimes/Documents/MATLAB/ASEN_3801/Lab_4/RSdata_nocontrol.mat");
+load("RSdata_nocontrol.mat");
 aircraft_state_array = rt_estim.signals.values;
 time = rt_estim.time;
 
