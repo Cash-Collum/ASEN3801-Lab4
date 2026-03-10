@@ -29,8 +29,6 @@ motor_forces = [f1;f2;f3;f4];
 control_input_array = [Z_c; L_c; M_c; N_c] * motor_forces;
 
 
-
-
 EOM = QuadrotorEOM(t, var, g, m, I, d, km, nu, mu, motor_forces);
 
 %% Function
