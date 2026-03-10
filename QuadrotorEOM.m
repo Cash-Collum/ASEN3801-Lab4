@@ -35,7 +35,7 @@ f2 = motor_forces(2);
 f3 = motor_forces(3);
 f4 = motor_forces(4);
 
-omega = [p; q; r];
+F_total = f1 + f2 + f3 + f4;
 
 g = -9.8;
 
@@ -47,12 +47,12 @@ cphi = cos(phi);  sphi = sin(phi);
 % derivitave velocity 
 x_dot = [ cth*cpsi,  sphi*sth*cpsi - cphi*spsi,  cphi*sth*cpsi + sphi*spsi] ;
 y_dot = [cth*spsi,  sphi*sth*spsi + cphi*cpsi,  cphi*sth*spsi - sphi*cpsi];
-z_dot = [-sth, sphi*cth,   cphi*cth ];
+z_dot = [-sth, sphi*cth,  cphi*cth ];
 
 v_body = [u_e; v_e; w_e];
 
 % Inertial position rates
-pos_dot = [x_dot, y_dot, z_dot] * v_body;
+pos_dot = [x_dot, y_dot, z_dot] .* v_body;
 
 xE_dot = pos_dot(1);
 yE_dot = pos_dot(2);
@@ -77,14 +77,13 @@ p_dot = (((Iy - Iz) / Ix * q * r) + (L / Ix) + Lc / Ix);
 q_dot = (((Iz - Ix) / Iy * p * r) + (M / Iy) + Mc / Iy);
 r_dot = (((Ix - Iy) / Iz * p * q) + (N / Iz) + Nc / Iz); % check that all variables are aligned/defined
 
-F_total = f1 + f2 + f3 + f4;
+
 
 
 var_dot = [xE_dot yE_dot zE_dot psi_dot theta_dot phi_dot u_dot v_dot w_dot p_dot q_dot r_dot]';
 
 
 Thrust = [0; 0; F_total];
-
 
 
 
