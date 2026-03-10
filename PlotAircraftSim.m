@@ -4,22 +4,34 @@ close all;
 %% Initialzing Data
 load("RSdata_nocontrol.mat");
 aircraft_state_array = rt_estim.signals.values;
-time = rt_estim.time;
+t = rt_estim.time;
 %Control Input array
 d = .06;
 km = .0024;
+var = aircraft_state_array;
+g = 9.81;
+m = .068;
+I = [5.8E-5, 7.2E-5, 1E-4];
+mu = 2E-6;
+nu = 1E-3;
+
+
+
 Z_c = [-1, -1, -1, -1];
 L_c = [-d/sqrt(2), -d/sqrt(2), -d/sqrt(2), -d/sqrt(2)];
 M_c = [d/sqrt(2), d/sqrt(2), d/sqrt(2), d/sqrt(2)];
 N_c = [km, -km, km, -km];
-f1 = 0;
-f2 = 0;
-f3 = 0;
-f4 = 0;
+f1 = .1667;
+f2 = .1667;
+f3 = .1667;
+f4 = .1667;
 motor_forces = [f1;f2;f3;f4];
 control_input_array = [Z_c; L_c; M_c; N_c] * motor_forces;
 
 
+
+
+EOM = QuadrotorEOM(t, var, g, m, I, d, km, nu, mu, motor_forces);
 
 %% Function
 % function PlotAircraftSim (time,aircraft_state_array,control_input_array,fig,col)
