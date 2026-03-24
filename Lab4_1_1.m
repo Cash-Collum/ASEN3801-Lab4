@@ -35,7 +35,7 @@ g = 9.81; % m / s^2
 % Trim state hover
 span_t = [0,10];
 var_0 = zeros(12,1);
-[t,var] = ode45(@(t,var)QuadrotorEOM(t,var,g,m,I,d,km,nu,mu,motor_forces),span_t,var_0);
+[t,var] = ode45(@(t,var)QuadrotorEOM_nodrag(t,var,g,m,I,d,km,nu,mu,motor_forces),span_t,var_0);
 
 
 
