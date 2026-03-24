@@ -6,9 +6,7 @@ load("RSdata_nocontrol.mat");
 aircraft_state_array = rt_estim.signals.values;
 time = rt_estim.time;
 % Constants
-%initialize figure number and color arrays
-fig=[121,122,123,124,125,126];
-col = {'r', 'b', 'g', 'k'};
+
 %Control Input array
 d = .06; % Radial distance to each motor (m)
 km = .0024; % Motor constant N*m/(N)
@@ -32,13 +30,17 @@ mu = 2E-6; %N*m/(rad/s)^2
 g = 9.81; % m / s^2
 
 
-%% Task 1 Part 1
+%% Task 1 Part 2
 % Trim state hover
 span_t = [0,10];
 var_0 = zeros(12,1);
+%initialize figure number and color arrays
+fig=[121,122,123,124,125,126];
+col = {'r', 'b', 'g', 'k'};
 %Change EOM_nodrag to QuadrotorEOM when accounting for drag
 [t_nodrag,var_nodrag] = ode45(@(t,var)QuadrotorEOM_nodrag(t,var,g,m,I,d,km,nu,mu,motor_forces),span_t,var_0);
 PlotAircraftSim(t_nodrag,var_nodrag,control_input_array_1,fig,col);
+
 
 
 
@@ -83,7 +85,7 @@ subplot(3,1,3)
 plot(time,Z,col{1},'LineWidth',1.2); grid on
 ylabel('Z (m)')
 xlabel('Time (s)')
-print('fig(1_nodrag)', '-dpng', '-r300');
+print(gcf, sprintf('fig%d', fig(1)), '-dpng', '-r300');
 
 % Figure 2: Euler Angles (psi, theta, phi)
 figure(fig(2));
@@ -99,7 +101,7 @@ subplot(3,1,3)
 plot(time,phi,col{1},'LineWidth',1.2); grid on
 ylabel('\phi (rad)')
 xlabel('Time (s)')
-print('fig(2_nodrag)', '-dpng', '-r300');
+print(gcf, sprintf('fig%d', fig(2)), '-dpng', '-r300');
 
 % Figure 3: Inertial velocity in body frame (u_e, v_e, w_e)
 figure(fig(3)); 
@@ -115,7 +117,7 @@ subplot(3,1,3)
 plot(time,w_e,col{1},'LineWidth',1.2); grid on
 ylabel('w (m/s)')
 xlabel('Time (s)')
-print('fig(3_nodrag)', '-dpng', '-r300');
+print(gcf, sprintf('fig%d', fig(3)), '-dpng', '-r300');
 
 % Figure 4: Angular rates (p, q, r)
 figure(fig(4)); 
@@ -131,7 +133,7 @@ subplot(3,1,3)
 plot(time,r,col{1},'LineWidth',1.2); grid on
 ylabel('r (rad/s)')
 xlabel('Time (s)')
-print('fig(4_nodrag)', '-dpng', '-r300');
+print(gcf, sprintf('fig%d', fig(4)), '-dpng', '-r300');
 
 % Figure 5: Control inputs (z_c, L_c, M_c, N_c)
 figure(fig(5)); 
@@ -150,7 +152,7 @@ subplot(4,1,4)
 plot(time,N_c,col{1},'LineWidth',1.2); grid on
 ylabel('N_c (Nm)')
 xlabel('Time (s)')
-print('fig(5_nodrag)', '-dpng', '-r300');
+print(gcf, sprintf('fig%d', fig(5)), '-dpng', '-r300');
 
 % Figure 6: 3D trajectory (with positive height upward)
 figure(fig(6)); 
@@ -166,7 +168,7 @@ title('3D Aircraft Path (positive up)')
 view(3)
 axis equal
 hold off
-print('fig(6_nodrag)', '-dpng', '-r300');
+print(gcf, sprintf('fig%d', fig(6)), '-dpng', '-r300');
 
 
 end
