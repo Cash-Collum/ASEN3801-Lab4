@@ -1,0 +1,70 @@
+clc;
+clear;
+close all;
+
+%% 3.5
+Ix = 5.8E-5;
+Iy = 7.2E-5;
+g = 9.81;
+
+tau1 = 0.5;
+tau2 = 0.05;
+
+lambda1 = -1/tau1;
+lambda2 = -1/tau2;
+
+% roll gains
+k1_phi = -(lambda1 + lambda2) * Ix;
+k2_phi =  (lambda1 * lambda2) * Ix;
+
+% pitch gains
+k1_theta = -(lambda1 + lambda2) * Iy;
+k2_theta =  (lambda1 * lambda2) * Iy;
+
+
+%lat
+figure();
+for i = 1:5
+k3_lat = -.0015*i; %Ideal case is .003 - .0045
+
+
+A_lat = [0, g, 0;
+         0, 0, 1;
+        -k3_lat/Ix, -k2_phi/Ix, -k1_phi/Ix];
+
+eigA_lat = eig(A_lat); 
+
+axis equal; hold on;
+h(i) = plot(real(eigA_lat), imag(eigA_lat), 'o');
+labels(i) = "k3 = " + k3_lat;
+grid on
+xlabel("Re(A)")
+ylabel("Im(A)")
+end
+legend(labels);
+hold off;
+%long
+figure();
+for i = 1:5
+k3_lon = .0015*i; %Ideal case is .003 - .0045
+
+A_lon = [0, -g, 0;
+         0, 0, 1;
+        -k3_lon/Iy, -k2_theta/Iy, -k1_theta/Iy];
+
+eigA_lon = eig(A_lon);
+
+
+axis equal; hold on;
+h(i) = plot(real(eigA_lon), imag(eigA_lon), 'o');
+labels(i) = "k3 = " + k3_lon;
+grid on
+xlabel("Re(A)")
+ylabel("Im(A)")
+end
+legend(labels);
+
+%% Comments
+%For anyone reading this the reasoning for having this as the sets of k3
+%values is because they stay as real numbers, remain above the set time
+%constant, and the average of the eigenvalues are the closest to 0.
